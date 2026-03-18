@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %} Login {% endblock %}
+{% block content %}
+<form action="POST" href="{{url_for('auth_rt.login')}}">
+    {{form.csrf_token}}
+    {{form.email.label}}
+    {{form.email}}
+    <br>
+    <br>
+    {{form.password.label}}
+    {{form.password}}
+    <br>
+    <br>
+    {{form.submit.label}}
+    {{form.submit}}
+    <br>
+    {% with message =  get_flashed_messages() %}
+    {% for mes in message %}
+    <h4 style = 'color: red'> {{mes}} </h4>
+    {% endfor %}
+    {% endwith %}
+</form>
+{% endblock %}
