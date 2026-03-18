@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+</head>
+<body>
+    {{ form.hidden_tag() }}
+    <label>{{form.label.name}}</label>
+    {{form.name()}}<br><br>
+    <label>{{form.label.email}}</label>
+    {{form.email()}}<br><br>
+    <label>{{form.label.password}}</label>
+    {{form.password()}}<br><br>
+    <input type="submit" value="Register">
+    <br><br>
+    <a href="/login">Login</a>
+</body>
+</html>
