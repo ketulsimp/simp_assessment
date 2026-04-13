@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+bcrpypt
+python_jose
+flask
+flask_wtf
+wtforms
+sqlalchemy
+motor
+pymysql
