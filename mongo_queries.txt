@@ -1,0 +1,65 @@
+Mongo query 1:
+
+db.orders.aggregate([
+  {
+    $unwind: '$items'
+  },
+  {
+    $group: {
+      '_id': '$items.product_id',
+      'total_quantity': {$sum: '$items.quantity'}
+    }
+  },
+  {
+    $lookup:{
+      from:'products',
+      localField: '_id',
+      foreignField: 'product_id',
+      as: 'metadata'
+    }
+  },
+  {
+    $project:
+    {
+      'product_id': '$_id',
+      'title': '$metadata.title',
+      'total_quantity': '$total_quantity',
+      '_id':0
+    }
+  }
+])
+
+
+Mongo Query 2:
+
+db.ordersnew.aggregate([
+  {$unwind: '$items'},
+  {
+    $group:{
+      _id: '$customer_id',
+      totalSpending: {
+        $sum: {$multiply: ['$items.quantity','$items.unit_price']}
+      }
+    }
+  },
+  {
+    $match: {totalSpending: {$gt: 500}}
+  },
+  {
+    $lookup:{
+      from: 'customers',
+      localField: '_id',
+      foreignField: 'customer_id',
+      as: 'customerInfo'
+    }
+  },
+  {
+    $project:{
+      _id:0,
+      customer_id: '$_id',
+      total_spent: '$totalSpending',
+      name: '$customerInfo.name'
+    }
+  }
+])
+

@@ -1,0 +1,22 @@
+-- Query 1
+
+select c.name,sum(i.quantity*i.unit_price) as total_spending
+from customers c
+join orders o on c.id = o.customer_id
+join order_items i on o.id = i.order_id
+where o.status = 'delivered'
+group by c.id;
+
+-- Query 2
+
+select status,count(*) as total_orders
+from orders
+group by status; 
+
+-- Query 3
+
+
+
+with cte as(select category, price, rank() over(partition by category order by price desc) as rnk
+from products)
+select category, price from cte where rnk = 1 or rnk = 2;
