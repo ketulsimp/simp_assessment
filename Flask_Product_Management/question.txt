@@ -1,0 +1,34 @@
+Build a Flask REST API for Product Management
+
+Requirements:
+1. POST /products
+Input:
+{ "name": "Laptop", "price": 1000, "stock": 5 }
+Create product
+Validations:
+name required
+price > 0
+stock >= 0
+2. GET /products
+Return all products
+with price filter:
+?min_price=500
+3. PUT /products/
+Update:
+name, price, stock
+Validate inputs
+4. DELETE /products/
+Delete product from DB
+
+Database Model:
+id (PK)
+name
+price
+stock
+created_at
+
+Constraints:
+Use Flask + SQLAlchemy
+Use Blueprint
+Handle errors (400, 404)
+Return JSON responses

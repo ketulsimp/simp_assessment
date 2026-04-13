@@ -1,0 +1,79 @@
+Build a FastAPI-based Inventory Management API with the following features:
+
+1. Authentication (JWT + Role-Based Access)
+
+Register API
+
+Input: username, password, role (admin / viewer)
+
+Login API
+
+Return JWT token
+
+Use role-based access control:
+
+admin → full access
+
+viewer → read-only
+
+
+
+2. Product Management
+
+CRUD APIs:
+
+Create product (admin only)
+
+Update/Delete (admin only)
+
+Read products (admin + viewer)
+
+Product fields:
+
+id, name, category, price, stock
+
+Support:
+
+Search (name)
+
+Filter (category)
+
+Sort (price)
+
+Pagination (limit, skip)
+
+
+
+3. Stock Management
+
+POST /products/{id}/restock → increase stock (admin)
+
+POST /products/{id}/sell → decrease stock (admin)
+
+GET /low-stock?threshold=10 → list low stock products
+
+
+
+4. Reports
+
+GET /inventory-value
+
+Total value grouped by category
+
+GET /stock-movements/{id}
+
+Show restock/sell history
+
+
+
+5. Technical Requirements
+
+- Use FastAPI Depends() for role-based auth
+
+- Use Pydantic models
+
+- Use BackgroundTasks for logging stock changes
+
+- Proper error handling (HTTP status codes)
+
+- Write minimum 3 test cases
