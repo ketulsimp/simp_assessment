@@ -1,0 +1,53 @@
+a. db.orders.aggregate([
+  {
+    $unwind:'$items'
+  },
+  {
+    $lookup:{
+      from:'products',
+      localField:'items.product_id',
+      foreignField:'product_id',
+      as:'join'
+    }
+  },
+  {
+    $group:{
+      _id:'$join.title',
+      total_quantity:{$sum:'$items.quantity'}
+    }
+  },
+  {$unwind:"$_id"},
+  {
+    $project:{
+      _id:"$_id",
+      'items.product_id':1,
+      total_quantity:1
+    }
+  }
+])
+
+b.db.orders.aggregate([
+  {$unwind:"$items"},
+  {
+    $lookup:{
+      from:"customers",
+      localField:"customer_id",
+      foreignField:"customer_id",
+      as:"spent"
+    }
+  },
+  {
+    $group:{
+      _id:{order_id:'$order_id',customer:'$spent.name'},
+      spent_amount:{$sum:{$multiply:["$items.quantity","$items.unit_price"]}}
+    }
+  },
+  {$unwind:'$_id.customer'},
+  {
+    $project:{
+      _id:1,
+      name:'$spent.name',
+      spent_amount:1
+    }
+  }
+])
