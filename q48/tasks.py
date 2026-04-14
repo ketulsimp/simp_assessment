@@ -1,4 +1,4 @@
-from problem_2.celery_ import celery
+from q48.celery_ import celery
 from celery import Task
 from celery.exceptions import SoftTimeLimitExceeded
 
