@@ -1,4 +1,4 @@
-from celery_problems.problem_2.celery_ import celery
+from problem_2.celery_ import celery
 from celery.exceptions import MaxRetriesExceededError
 import logging
 
