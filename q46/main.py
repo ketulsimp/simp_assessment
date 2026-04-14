@@ -1,5 +1,5 @@
 from flask import Flask
-from Flask_task.Blueprints.product import product_rt, db
+from q46.Blueprints.product import product_rt, db
 
 
 app = Flask(__name__)
