@@ -1,0 +1,66 @@
+Query 1
+
+db.users.aggregate([
+  {
+    $lookup:
+    {
+      from: 'orders',
+      localField: 'user_id',
+      foreignField: 'user_id',
+      as: 'orders'
+    }
+  },
+  {
+    $unwind: '$orders'
+  },
+  {
+    $group:
+    {
+      _id: '$city',
+      total_orders: {$sum: 1}
+    }
+  },
+  {
+    $sort:{
+      total_orders: -1
+    }
+  },
+  {
+    $limit: 3
+  }
+])
+
+
+Query 2
+
+db.orders.aggregate([
+  {
+    $match:{
+      'items.price': {$gt: 100}
+    }
+  },
+  {
+    $lookup:{
+      from: 'users',
+      localField: 'user_id',
+      foreignField: 'user_id',
+      as: 'users'
+    }
+  },
+  {
+    $unwind: '$users'
+  },
+  {
+    $group:
+    {
+      _id: '$users.city',
+      total_orders: {$sum: 1}
+    }
+  },
+  {
+    $sort: {total_orders: -1}
+  },
+  {
+    $limit: 3
+  }
+])

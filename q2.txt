@@ -1,0 +1,23 @@
+-- Query 1
+select a.name, sum(b.price) as total_revenue
+from authors a 
+join books b on a.id = b.author_id
+join loans l on b.id = l.book_id
+where l.return_date is not null 
+group by a.name;
+
+-- Query 2
+select m.name, count(*) as currently_active_loans
+from members m
+join loans l on m.id = l.member_id
+where l.return_date is null
+group by m.name;
+
+-- Query 3
+with step as (
+	select *, rank() over(partition by genre order by price desc) as rnk
+    from books
+)
+select genre,title,price
+from step
+where rnk=1;
