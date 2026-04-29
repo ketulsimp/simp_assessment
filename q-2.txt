@@ -1,0 +1,91 @@
+-- Tables
+CREATE TABLE authors (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    country VARCHAR(50)
+);
+
+CREATE TABLE books (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255),
+    author_id INT REFERENCES authors(id),
+    genre VARCHAR(50),
+    price DECIMAL(8,2),
+    published_year INT
+);
+
+CREATE TABLE members (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    join_date DATE
+);
+
+CREATE TABLE loans (
+    id SERIAL PRIMARY KEY,
+    member_id INT REFERENCES members(id),
+    book_id INT REFERENCES books(id),
+    loan_date DATE,
+    return_date DATE  -- NULL if not yet returned
+);
+
+-- Sample data
+INSERT INTO authors VALUES
+(1, 'Tolkien', 'UK'),
+(2, 'Asimov', 'USA'),
+(3, 'Murakami', 'Japan');
+
+INSERT INTO books VALUES
+(1, 'The Hobbit', 1, 'Fantasy', 15.00, 1937),
+(2, 'LOTR', 1, 'Fantasy', 25.00, 1954),
+(3, 'Foundation', 2, 'Sci-Fi', 18.00, 1951),
+(4, 'I, Robot', 2, 'Sci-Fi', 12.00, 1950),
+(5, 'Norwegian Wood', 3, 'Fiction', 14.00, 1987);
+
+INSERT INTO members VALUES
+(1, 'Alice', 'alice@lib.com', '2025-01-15'),
+(2, 'Bob', 'bob@lib.com', '2025-06-20');
+
+INSERT INTO loans VALUES
+(1, 1, 1, '2026-01-10', '2026-01-20'),
+(2, 1, 2, '2026-02-05', NULL),
+(3, 2, 3, '2026-01-15', '2026-01-30'),
+(4, 2, 1, '2026-03-01', NULL);
+
+Write SQL queries:
+
+1. Find each author's total book-revenue (sum of prices of books that have been LOANED AND RETURNED). Show author name and total.
+2. Find members with currently active loans (return_date IS NULL), along with the count of their active loans.
+3. For each genre, find the most expensive book using a window function. Show genre, title, price.
+
+
+
+
+Answer: 
+
+1) 	SELECT 
+		a.name,
+		SUM(b.price) AS total_revenue
+	FROM authors a
+	JOIN books b ON a.id = b.author_id
+	JOIN loans l ON b.id = l.book_id
+	WHERE l.return_date IS NOT NULL
+	GROUP BY a.name;
+
+2) select  
+m.name, count(l.id) as active_loans 
+from members m join loans l on m.id = l.member_id 
+where l.return_date is null group by m.name;
+
+3)SELECT genre, title, price
+FROM (
+    SELECT 
+        genre,
+        title,
+        price,
+        ROW_NUMBER() OVER (PARTITION BY genre ORDER BY price DESC) AS rn
+    FROM books
+) t
+WHERE rn = 1;
+
+

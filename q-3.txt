@@ -1,0 +1,129 @@
+a) Find the top 3 cities with the highest number of orders, along with each city's total order count.
+
+Insert data:
+db.users.insertMany([
+  { user_id: 1, name: 'Alice', city: 'Mumbai' },
+  { user_id: 2, name: 'Bob', city: 'Delhi' },
+  { user_id: 3, name: 'Charlie', city: 'Mumbai' },
+  { user_id: 4, name: 'Dave', city: 'Pune' }
+]);
+
+db.orders.insertMany([
+  { order_id: 1, user_id: 1, amount: 200 },
+  { order_id: 2, user_id: 1, amount: 150 },
+  { order_id: 3, user_id: 2, amount: 300 },
+  { order_id: 4, user_id: 3, amount: 100 },
+  { order_id: 5, user_id: 4, amount: 250 },
+  { order_id: 6, user_id: 1, amount: 50 }
+]);
+
+Expected output fields:
+city, total_orders
+
+
+b) Find the top 3 cities with the highest number of orders
+ BUT only count orders where at least one item has price > 100
+
+db.users.insertMany([
+  { user_id: 1, name: 'Alice', city: 'Mumbai' },
+  { user_id: 2, name: 'Bob', city: 'Delhi' },
+  { user_id: 3, name: 'Charlie', city: 'Mumbai' },
+  { user_id: 4, name: 'Dave', city: 'Pune' }
+]);
+
+db.orders.insertMany([
+  {
+    order_id: 1,
+    user_id: 1,
+    items: [
+      { product: "A", price: 120 },
+      { product: "B", price: 80 }
+    ]
+  },
+  {
+    order_id: 2,
+    user_id: 1,
+    items: [
+      { product: "C", price: 90 }
+    ]
+  },
+  {
+    order_id: 3,
+    user_id: 2,
+    items: [
+      { product: "D", price: 200 }
+    ]
+  },
+  {
+    order_id: 4,
+    user_id: 3,
+    items: [
+      { product: "E", price: 50 }
+    ]
+  },
+  {
+    order_id: 5,
+    user_id: 4,
+    items: [
+      { product: "F", price: 300 }
+    ]
+  }
+]);
+
+Expected output fields:
+city, total_orders
+
+
+Answer:
+
+1)db.orders.aggregate([
+{
+  $lookup:{
+    from:"users",
+    localField:"user_id",
+    foreignField:"user_id",
+    as:"user"
+  }
+},
+  {$unwind:"$user"},
+  {
+  $group:{
+    _id: "$user.city",
+    totalorder:{$sum : 1}
+  }
+  },
+  {$sort: {totalorder: -1}},
+  {$limit:3}
+  
+]);
+
+2)db.orders.aggregate([
+  {
+    $match: {
+      items: {
+        $elemMatch: { price: { $gt: 100 } }
+      }
+    }
+  },
+  {
+    $lookup: {
+      from: "users",
+      localField: "user_id",
+      foreignField: "user_id",
+      as: "user"
+    }
+  },
+  { $unwind: "$user" },
+  {
+    $group: {
+      _id: "$user.city",
+      total_orders: { $sum: 1 }
+    }
+  },
+  { $sort: { total_orders: -1 } },
+  { $limit: 3 }
+])
+
+
+
+

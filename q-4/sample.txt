@@ -1,0 +1,59 @@
+Question: FastAPI Task API with MongoDB & Authentication (15 Marks)
+Build a Task Management API using:
+FastAPI
+MongoDB
+You must implement JWT-based authentication and store data in MongoDB.
+
+Requirements
+(A) User Login API (JWT) (4 Marks)
+ Endpoint: POST /login
+ Accept:
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+ If valid (hardcoded user is fine), return JWT token
+ Use token for protected routes
+
+(B) Create Task (Protected API) (4 Marks)
+ Endpoint: POST /tasks
+ Requires Bearer Token
+ Store task in MongoDB
+ Fields:
+ title (required)
+ priority (low/medium/high)
+ owner identify (from token, not based on request params)
+
+(C) Get Tasks (Filter + Ownership) (3 Marks)
+ Endpoint: GET /tasks
+ Only return tasks of logged-in user
+ Optional filter:
+priority
+db.orders.aggregate([
+  {
+    $lookup: {
+      from: "users",
+      localField: "user_id",
+      foreignField: "user_id",
+      as: "user"
+    }
+  },
+  { $unwind: "$user" },
+  {
+    $group: {
+      _id: "$user.city",
+      total_orders: { $sum: 1 }
+    }
+  },
+  { $sort: { total_orders: -1 } },
+  { $limit: 3 }
+])  
+(D) Update Task Status (2 Marks)
+ Endpoint: PATCH /tasks/{id}
+ Update status: pending / completed
+ Ensure user can update only their own tasks
+
+(E) Pydantic + Security + Structure (2 Marks)
+ Use Pydantic models
+ Use dependency injection for auth
