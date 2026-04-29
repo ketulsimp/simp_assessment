@@ -1,0 +1,23 @@
+-- Write SQL queries:
+-- 1. Find each author's total book-revenue (sum of prices of books that have been LOANED AND RETURNED). Show author name and total.
+select a.name,sum(b.price) as total
+from books b
+join authors a
+on b.author_id=a.id
+group by a.name;
+
+-- 2. Find members with currently active loans (return_date IS NULL), along with the count of their active loans.
+select  m.name,l.loan_date,l.return_date
+from loans l
+join members m
+on l.member_id=m.id
+where l.return_date is Null;
+
+
+-- 3. For each genre, find the most expensive book using a window function. Show genre, title, price.
+select max(price) as price,genre,title,
+dense_rank() over(partition by genre order by max(price)) as rnk 
+from books
+group by genre
+order by price desc;
+

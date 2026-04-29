@@ -1,0 +1,49 @@
+[a]db.orders.aggregate([
+  {$group:{
+    _id:"$user_id",
+    total_orders:{$sum:1}
+  }},
+  {$lookup:
+  {
+    from:"users",
+    localField:"_id",
+    foreignField:"user_id",
+    as:"user_detail"
+  }
+    },
+  {$unwind:"$user_detail"},
+  {$project:{
+    _id:0,
+    city:"$user_detail.city",
+    total_orders:1
+  }},
+  {$sort:{total_orders:-1}},
+  {$limit:3}
+])
+
+
+
+[b]db.orders.aggregate([
+  {$unwind:"$items"},
+  {$match:{"$items.price":{$gt:100}}},
+  {$group:{
+_id:"$user_id",
+total_orders:{$sum:1},
+}},
+{$lookup:
+{
+from:"users",
+localField:"_id",
+foreignField:"user_id",
+as:"user_detail"
+}
+},
+{$unwind:"$user_detail"},
+{$project:{
+_id:0,
+city:"$user_detail.city",
+total_orders:1
+}},
+{$sort:{total_orders:-1}},
+{$limit:3}
+])
