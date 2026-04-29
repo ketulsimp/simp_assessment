@@ -1,0 +1,56 @@
+a) db.orders.aggregate([
+  {
+    $lookup:{
+      from:'users',
+      localField:'user_id',
+      foreignField:'user_id',
+      as:'join'
+    }
+  },
+  {$unwind:'$join'},
+  {
+    $group:{
+      _id:'$user_id',
+      count:{$sum:1}
+    }
+  },
+  {
+    $project:{
+			_id:'$join[city]',
+      city:'$join.city',
+      totalOrders:'$count'
+    }
+  },
+  {$sort:{'total_count':1}},
+  {$limit:3}
+])
+
+
+b) db.orders.aggregate([
+  {$unwind:'$items'},
+  {
+    $lookup:{
+      from:'users',
+      localField:'user_id',
+      foreignField:'user_id',
+      as:'join'
+    }
+  },
+  {$unwind:'$join'},
+  {$match:{'items.price':{$gt:100}}},
+  {
+    $group:{
+      _id:'$user_id',
+      count:{$sum:1}
+    }
+  },
+  {
+    $project:{
+	  _id:'$join[city]',
+      city:'$join.city',
+      totalOrders:'$count'
+    }
+  },
+  {$sort:{'total_count':1}},
+  {$limit:3}
+])

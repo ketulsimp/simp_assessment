@@ -1,0 +1,20 @@
+-- 1. Find each author's total book-revenue (sum of prices of books that have been LOANED AND RETURNED). Show author name and total.
+SELECT A.NAME,SUM(B.PRICE) AS REVENUE
+FROM AUTHORS A 
+JOIN BOOKS B ON B.AUTHOR_ID=A.ID
+JOIN LOANS L ON B.ID=L.BOOK_ID
+JOIN MEMBERS M ON M.ID=L.MEMBER_ID
+WHERE L.RETURN_DATE IS NOT NULL
+GROUP BY B.AUTHOR_ID;
+
+-- 2. Find members with currently active loans (return_date IS NULL), along with the count of their active loans.
+SELECT M.NAME,COUNT(L.MEMBER_ID) AS ACTIVE_LOAN_COUNT FROM MEMBERS M
+JOIN LOANS L ON L.MEMBER_ID=M.ID
+WHERE L.RETURN_DATE IS NULL
+GROUP BY M.NAME;
+
+-- 3. For each genre, find the most expensive book using a window function. Show genre, title, price.
+WITH GENRE AS (
+	SELECT *, DENSE_RANK() OVER (PARTITION BY GENRE ORDER BY PRICE DESC) AS RNK
+    FROM BOOKS
+)SELECT GENRE,TITLE,PRICE FROM GENRE WHERE RNK=1;
